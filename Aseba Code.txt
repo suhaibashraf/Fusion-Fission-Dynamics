@@ -1,0 +1,132 @@
+CW2 ASEBA CODE
+
+# Variables
+var state = WANDERING  #Staring With Wandering
+var direction = SPEED  #+ve vaue to right turn
+var timerC = 0         #Timer to change Direction
+
+timer.period[0]=10000  #10 sec
+callsub goForward
+call leds.top(0, 32, 0) 
+
+onevent prox
+	if state == WANDERING then
+		if prox.ground.delta[0] &lt; THRESHOLD or
+ 		prox.ground.delta[1] &lt; THRESHOLD then
+			callsub lineDetection
+		elseif timerC >= SEARCHDISTANCE then
+			callsub searching
+		elseif  timerC &lt; SEARCHDISTANCE then
+			callsub goForward
+			timerC++
+		end
+		if prox.horizontal[0] > 0 or
+	 	prox.horizontal[1] > 0 or
+	 	prox.horizontal[3] > 0 or
+	 	prox.horizontal[4] > 0 then
+	 		callsub robotDetection	
+		end
+	end
+return
+
+sub lineDetection   #Detecting Line
+	if prox.ground.delta[0] &lt; THRESHOLD then
+		callsub rightTurn
+		timer.period[0] = TURNANGLE
+	elseif prox.ground.delta[1] &lt; THRESHOLD then
+		callsub leftTurn
+		timer.period[0] = TURNANGLE
+	end
+	state = TURNING
+	timerC = 0
+	call leds.top(0, 0, 32)
+return
+
+sub robotDetection  #Detecting Zone
+	if prox.horizontal[0] > PERSPACE or
+	 prox.horizontal[1] > PERSPACE or
+	 prox.horizontal[3] > PERSPACE or
+	 prox.horizontal[4] > PERSPACE then
+	 	callsub rightTurn
+		timer.period[0] = TURNBACK
+		state = TURNING
+		call leds.top(32, 0, 0)
+	elseif prox.horizontal[1] > NEARVIEW then
+		callsub rightTurn
+		timer.period[0] = TURNANGLE
+		state = TURNING
+		call leds.top(0, 0, 32)
+	elseif prox.horizontal[3] > NEARVIEW then
+		callsub leftTurn
+		timer.period[0] = TURNANGLE
+		state = TURNING
+		call leds.top(0, 0, 32)
+	elseif prox.horizontal[1] > MAXVIEW then
+		callsub leftTurn
+		timer.period[0] = SEARCHANGLE
+		state = TURNING
+		call leds.top(0, 0, 32)
+	elseif prox.horizontal[3] > MAXVIEW then
+		callsub rightTurn
+		timer.period[0] = SEARCHANGLE
+		state = TURNING
+		call leds.top(0, 32, 32)
+	end
+	timerC = 0
+return
+
+sub searching        #Searching Outside Zone
+	if direction == SPEED then
+		callsub rightTurn
+		timer.period[0] = SEARCHANGLE
+	else
+		callsub leftTurn
+		timer.period[0] = SEARCHANGLE
+	end
+	state = TURNING
+	direction = -direction
+	timerC = 0
+	call leds.top(0, 0, 32)
+return
+
+return
+
+sub rightTurn        # Turning Right
+	motor.left.target = SPEED
+	motor.right.target = -SPEED
+return
+
+sub leftTurn         # Turning Left
+	motor.left.target = -SPEED
+	motor.right.target = SPEED
+return
+
+sub goForward        # Moving Forward
+	motor.left.target = SPEED
+	motor.right.target = SPEED
+return
+
+sub stop             # Stopping
+	motor.left.target = 0
+	motor.right.target = 0
+return
+
+onevent buttons      #Controlling by button
+	if button.center  == 1 and state != STOP then
+		state = STOP
+		callsub stop
+	end
+	if button.backward  == 1 and state == STOP then
+		state = WANDERING 
+		callsub goForward
+	end
+return
+
+onevent timer0
+	if state == TURNING then     #Setting State
+		callsub goForward
+		timer.period[0]=0
+		state = WANDERING
+		call leds.top(0, 32, 0)
+	end
+return
