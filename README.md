@@ -6,7 +6,9 @@ Developed Netlogo and Thymio robotics projects as a part of coursework for the c
 By changing the values of these variables, the robots changes their behaviour like following other robot in a line or walk in flocks.
 
 ### Technology Used
-Netlogo, Aseba, Thymio Robotcs
+  * Netlogo
+  * Aseba Studio
+  * Thymio Robots
 
 ### Links
 [Portfolio Link](https://suhaibashraf.github.io/Portfolio/fusion-fission-dynamics)
