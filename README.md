@@ -1,9 +1,9 @@
 # Fusion-Fission Dynamics
 
 ## Robotics Project
-Developed Netlogo and Thymio robotics projects as a part of coursework for the course Artificial Life with Robotics. The robot followed other robots, walk in flocks, detected the obstacles or line and avoided.
+Developed Netlogo and Thymio robotics projects as a part of coursework for the module Artificial Life with Robotics. The robot follows other robots, moves in flocks, senses obstructions or lines and avoids them.
 
-By changing the values of these variables, the robots changes their behaviour like following other robot in a line or walk in flocks.
+By altering the values of some variables, the robots change their behaviours, such as following other robots in a line or walking in flocks.
 
 ### Technology Used
   * Netlogo
